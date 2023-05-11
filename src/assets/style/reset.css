@@ -1,0 +1,70 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Roboto Condensed", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.news-col ul,
+.news-col ul li,
+.login ul,
+.login ul li,
+.product-block ul,
+.product-block ul li,
+.menu-footer ul,
+.menu-footer ul li,
+.col-signin-left ul,
+.col-signin-left ul li,
+.form-contact ul,
+.form-contact ul li,
+.intro-delevery ul,
+.intro-delevery ul li,
+.search-page ul,
+.search-page ul li,
+.result ul,
+.result ul li,
+.hot-news ul,
+.hot-news ul li,
+.news-page ul,
+.news-page ul li,
+.news-related ul,
+.news-related ul li,
+.part-buy ul,
+.part-buy ul li,
+.login-cart ul,
+.login-cart ul li,
+.order-product ul,
+.order-product ul li .comment-form ul,
+.comment-form ul li,
+.comment-block ul,
+.comment-block ul li,
+.info-cus-delivery ul,
+.info-cus-delivery ul li,
+.account-col ul,
+.account-col ul li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:focus {
+  outline: none;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.fa {
+  font-style: inherit;
+  font-family: "FontAwesome";
+}
+.fa-light {
+  font-style: inherit;
+  font-family: "FontAwesome";
+}
