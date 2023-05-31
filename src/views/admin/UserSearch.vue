@@ -24,7 +24,7 @@
           khoản</router-link
         >
       </li>
-      <li href="/thay-doi-mat-khau">
+      <li>
         <router-link to="thay-doi-mat-khau"
           ><i class="fa-solid fa-key"></i>&nbsp;Đổi mật khẩu</router-link
         >
@@ -48,15 +48,20 @@ export default {
   },
   //lấy thông tin đăng nhập
   async created() {
-    // console.log('object',this.store.auth.user);
-    if (this.useUsersStore.auth.user.is_admin === true) {
-      const isLoggedIn = localStorage.getItem("isLoggedIn");
-      const userData = localStorage.getItem("user");
-      if (!isLoggedIn && !userData) {
-        this.$router.push({ path: "/login" });
+    try {
+      // console.log('object',this.store.auth.user);
+      await this.getUsers(this.params);
+      if (this.auth.user.is_admin === true) {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        const userData = localStorage.getItem("user");
+        if (!isLoggedIn && !userData) {
+          this.$router.push({ path: "/login" });
+        }
+      } else {
+        this.$router.push({ path: "/home" });
       }
-    } else {
-      this.$router.push({ path: "/home" });
+    } catch (error) {
+      console.error(error);
     }
   },
   methods: {
@@ -70,6 +75,7 @@ export default {
       await this.getProducts(this.params);
       await this.getUsers(this.params);
       this.showSearches = false;
+      this.params.page = 1;
     },
     async searchText(event) {
       let value = event.target.value;
@@ -87,7 +93,7 @@ export default {
   },
   computed: {
     ...mapState(useProductsStore, ["allProducts", "params"]),
-    ...mapState(useUsersStore, ["allUsers"]),
+    ...mapState(useUsersStore, ["allUsers", "auth"]),
   },
 };
 </script>

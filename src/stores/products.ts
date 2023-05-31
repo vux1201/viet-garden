@@ -56,7 +56,8 @@ export const useProductsStore = defineStore("products", {
     async getCategories(params: ParamsGetProduct) {
       try {
         const res = await api.get(
-          `/category-groups/?page=${params.page}&size=${params.size}`,
+          // ?page=${params.page}&size=${params.size}
+          `/category-groups/`,
           { params }
         );
         if (res.status === 200) {
@@ -173,7 +174,7 @@ export const useProductsStore = defineStore("products", {
 
     //upoad image
     async uploadImage(image: any, data: any, cb: any) {
-      console.log("upload image", image);
+      // console.log("upload image", image);
       var form = new FormData();
       form.append("file", image[0]);
       try {
@@ -193,7 +194,7 @@ export const useProductsStore = defineStore("products", {
         const res = await authApi.post(`/products/`, Product);
         if (res.status === 200) {
           this.allProducts = res.data;
-          console.log("postProducts", res.data);
+          // console.log("postProducts", res.data);
         }
       } catch (error) {
         console.log(error);

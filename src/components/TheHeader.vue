@@ -101,6 +101,7 @@
           placeholder="Tìm Kiếm"
           v-model="searchProduct"
           @keyup.enter="onSearch()"
+          @input="searchText($event)"
         />
         <button @click="onSearch()">Tìm kiếm</button>
       </div>
@@ -125,9 +126,9 @@
               <li class="has-sub">
                 <span class="submenu-button"></span
                 ><a href="#" target="">Cây cảnh</a>
-                <ul>
+                <ul class="hover-nav">
                   <li
-                    v-for="(item, index) in allCategory.results?.[0].categories"
+                    v-for="(item, index) in allCategory.results?.[7].categories"
                     :key="index"
                   >
                     <a @click="categoryView(item.id)">{{ item.name }}</a>
@@ -170,9 +171,9 @@
               <li class="has-sub">
                 <span class="submenu-button"></span
                 ><a href="#" target="">Chậu cảnh</a>
-                <ul>
+                <ul class="hover-nav">
                   <li
-                    v-for="(item, index) in allCategory.results?.[1].categories"
+                    v-for="(item, index) in allCategory.results?.[6].categories"
                     :key="index"
                   >
                     <a @click="categoryView(item.id)">{{ item.name }}</a>
@@ -211,7 +212,7 @@
                 <span class="submenu-button"></span
                 ><a href="#" target="">Phụ kiện cây cảnh</a>
 
-                <ul>
+                <ul class="hover-nav">
                   <li>
                     <a href="#" target="">Đất trồng, phân bón</a>
                   </li>
@@ -239,7 +240,7 @@
                 <span class="submenu-button"></span
                 ><a href="#" target="">Blog - Tin Tức</a>
 
-                <ul>
+                <ul class="hover-nav">
                   <li>
                     <router-link to="/chuyen-muc-kien-thuc-cay-canh"
                       >Kiến Thức Cây Cảnh</router-link
@@ -256,7 +257,7 @@
                 <span class="submenu-button"></span
                 ><a href="#" target="">Hỗ trợ</a>
 
-                <ul>
+                <ul class="hover-nav">
                   <li>
                     <router-link to="/chuyen-muc-huong-dan-mua-hang"
                       >Hướng dẫn mua hàng</router-link
@@ -335,8 +336,16 @@ export default {
     async onSearch() {
       console.log("search", this.params);
       this.params.keyword = this.searchProduct;
+      this.params.page = 1;
       await this.getProducts(this.params);
       this.showSearches = false;
+    },
+    async searchText(event) {
+      let value = event.target.value;
+      console.log(value);
+      if (value === "") {
+        this.onSearch();
+      }
     },
 
     // đăng xuất
@@ -347,7 +356,12 @@ export default {
   },
   computed: {
     ...mapState(useCartStore, ["allCart"]),
-    ...mapState(useProductsStore, ["getProducts","allProducts", "params", "allCategory"]),
+    ...mapState(useProductsStore, [
+      "getProducts",
+      "allProducts",
+      "params",
+      "allCategory",
+    ]),
   },
 };
 </script>
@@ -622,6 +636,21 @@ export default {
         &.has-sub:hover > a:after {
           content: "\f0d7";
           font-family: "FontAwesome";
+        }
+        &.has-sub .hover-nav {
+          box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px,
+            rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+            rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+          li {
+            border-top: solid 1px #e4e1e1;
+            &:hover {
+              background: rgba(0, 0, 0, 0.1);
+              margin-top: -2px;
+            }
+            a {
+              margin: 6px 0;
+            }
+          }
         }
       }
       &.align-center > ul {

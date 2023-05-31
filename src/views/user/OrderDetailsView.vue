@@ -117,6 +117,12 @@
                           >
                         </td>
                       </tr>
+                      <button
+                        class="btn-confirm"
+                        @click="confirm(this.getOderId.id)"
+                      >
+                        Đã nhận hàng
+                      </button>
                     </tbody>
                   </table>
                 </div>
@@ -134,9 +140,12 @@ import { mapActions, mapState } from "pinia";
 import { useOrderStore } from "../../stores/orders";
 import { useUsersStore } from "../../stores/users";
 import accountColLeft from "../../components/TheAccountColumnLeft.vue";
+import Swal from "sweetalert2";
 export default {
   data() {
-    return;
+    return {
+      status: 3,
+    };
   },
   async created() {
     try {
@@ -149,7 +158,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useOrderStore, ["getOder"]),
+    ...mapActions(useOrderStore, ["getOder", "getAllOrders", "putOder"]),
     ...mapActions(useUsersStore, ["getProfile"]),
     // doi tien
     totalPrice(price) {
@@ -157,6 +166,22 @@ export default {
         style: "currency",
         currency: "VND",
       }).format(price);
+    },
+
+    //da nhan hang
+    async confirm(id) {
+      // console.log(id);
+      try {
+        await this.putOder(id, this.status);
+        await this.getAllOrders(this.page, this.size);
+        // console.log(id);
+        Swal.fire("Cảm ơn bạn đã mua hàng");
+        setTimeout(() => {
+          this.$router.push({ path: "/don-hang-cua-toi" });
+        }, "2000");
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   computed: {
@@ -212,6 +237,13 @@ export default {
         float: left;
       }
     }
+  }
+
+  .btn-confirm {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin: 10px 20px;
+    cursor: pointer;
   }
 
   .table {

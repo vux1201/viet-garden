@@ -274,6 +274,7 @@
 import { mapActions, mapState } from "pinia";
 import { useProductsStore } from "../../stores/products";
 import { useCartStore } from "../../stores/cart";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -327,7 +328,13 @@ export default {
           this.$router.push({ path: "/login" });
         } else {
           await this.addCart(data);
-          alert("Đã thêm vào giỏ hàng.");
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Đã thêm vào giỏ hàng",
+            showConfirmButton: false,
+            timer: 1000,
+          });
         }
         console.log(data, "tex");
       } catch (error) {

@@ -196,6 +196,7 @@ import { mapActions, mapState } from "pinia";
 import { useUsersStore } from "../../stores/users";
 import { useCartStore } from "../../stores/cart";
 import { useOrderStore } from "../../stores/orders";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -225,28 +226,40 @@ export default {
     // dat hang
     async postOrder() {
       try {
-        for (let i = 0; i < this.allCart.length; i++) {
-          const item = this.allCart[i];
-          const id_cart = item.id;
-          const order = {
-            qty: item.qty,
-            product_id: item.product.id,
-            price: item.product.price,
-          };
-          this.valOrder.push(order);
-          this.idCart.push(id_cart);
+        if (this.allCart.length < 1) {
+          Swal.fire("Không có sản phẩm được chọn");
+        } else {
+          for (let i = 0; i < this.allCart.length; i++) {
+            const item = this.allCart[i];
+            const id_cart = item.id;
+            const order = {
+              qty: item.qty,
+              product_id: item.product.id,
+              price: item.product.price,
+            };
+            this.valOrder.push(order);
+            this.idCart.push(id_cart);
+          }
+          let orders = this.valOrder;
+          let idCart = this.idCart;
+          await this.addOrder(orders);
+          for (let i = 0; i < this.idCart.length; i++) {
+            await this.deleteCart(idCart[i]);
+            console.log(idCart, "12o");
+          }
+          await this.getCarts();
+          // console.log(this.allOrders, "allO");
+          Swal.fire({
+            position: "top-center",
+            icon: "success",
+            title: "Đặt hàng thành công",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          setTimeout(() => {
+            this.$router.push({ path: "/home" });
+          }, "2000");
         }
-        let orders = this.valOrder;
-        let idCart = this.idCart;
-        await this.addOrder(orders);
-        for (let i = 0; i < this.idCart.length; i++) {
-          await this.deleteCart(idCart[i]);
-          console.log(idCart, "12o");
-        }
-        await this.getCarts();
-        // console.log(this.allOrders, "allO");
-        alert("Đặt hàng thành công!");
-        this.$router.push({ path: "/home" });
       } catch (error) {
         console.log(error);
       }

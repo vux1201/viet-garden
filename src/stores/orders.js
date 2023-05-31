@@ -40,9 +40,9 @@ export const useOrderStore = defineStore("orders", {
         console.log(error);
       }
     },
-    async getAllOrders(skip, limit) {
+    async getAllOrders(page, size) {
       try {
-        const res = await authApi.get(`/orders/?skip=${skip}&limit=${limit}`);
+        const res = await authApi.get(`/orders/?page=${page}&size=${size}`);
         if (res.status === 200) {
           this.admGetAllOrders = res.data;
         }

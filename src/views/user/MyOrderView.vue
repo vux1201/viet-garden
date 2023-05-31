@@ -26,7 +26,7 @@
                     <thead>
                       <tr>
                         <th>STT</th>
-                        <th>Ngày Yêu Cầu</th>
+                        <th>Mã đơn hàng</th>
                         <th>Tên sản phẩm</th>
                         <th>Tổng Tiền</th>
                         <th>Tình Trạng</th>
@@ -38,7 +38,7 @@
                           <a>{{ index + 1 }}</a>
                         </td>
                         <td class="day">
-                          <a @click="detailOrder(item.id)">{{ item.code }}</a>
+                          <a @click="detailOrder(item.id)">#{{ item.code }}</a>
                         </td>
                         <td class="name-pro">
                           <span v-for="(pro, i) in item.order_products" :key="i"
@@ -46,7 +46,10 @@
                           >
                         </td>
                         <td class="price-all">{{ totalPrice(item.total) }}</td>
-                        <td class="no-finish">Đang giao hàng</td>
+                        <td class="no-finish">
+                          <p v-if="item.status == 3">Đã nhận hàng</p>
+                          <p v-else>Chưa nhận hàng</p>
+                        </td>
                       </tr>
 
                       <!-- <tr>
@@ -172,8 +175,12 @@ export default {
             left: 30px;
             text-transform: capitalize;
           }
-          .day {
+          .day a {
             font-size: 13px;
+            &:hover {
+              cursor: pointer;
+              color: rgb(117, 226, 89);
+            }
           }
           .price-all {
             text-align: center;

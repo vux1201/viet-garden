@@ -3,55 +3,39 @@
     <div class="sidenav">
       <h2 class="logo">
         <router-link to="home"
-          ><i class="fa-light fa-seedling"></i>&nbsp;Bosai shop</router-link
+          ><i class="fa-light fa-seedling"></i>&nbsp;Vườn Cây Việt</router-link
         >
       </h2>
-      <ul>
-        <router-link to="/quan-ly-nguoi-dung">
-          <li>
-            <i class="fa-solid fa-user"></i>&nbsp;User management
-          </li></router-link
-        >
-        <router-link to="/quan-ly-san-pham">
-          <li>
-            <i class="fa fa-list-check"></i>&nbsp;Product management
-          </li></router-link
-        >
-        <router-link to="/quan-ly-danh-muc">
-          <li>
-            <i class="fa fa-solid fa-clipboard-list"></i>&nbsp;Categories
-            management
-          </li></router-link
-        >
-        <router-link to="/quan-ly-don-hang">
-          <li>
-            <i class="fa-solid fa-cart-shopping"></i>&nbsp;Order management
-          </li></router-link
-        >
-        <router-link to="#">
-          <li>
-            <i class="fa-solid fa-bell"></i>&nbsp;Notification
-          </li></router-link
-        >
-        <li class="setting">
-          <i class="fa-light fa-gear"></i>&nbsp; Setting
-          <ul class="select-setting">
-            <router-link to="/thong-tin-tai-khoan">
-              <li>
-                <i class="fa-light fa-file-invoice"></i>&nbsp;Thông tin đăng
-                nhập
-              </li></router-link
-            >
-            <router-link to="/thay-doi-mat-khau">
-              <li>
-                <i class="fa-solid fa-key"></i>&nbsp;Thay đổi mật khẩu
-              </li></router-link
-            >
-            <button class="btn-logout" @click="handleLogout">
-              <i class="fa-solid fa-arrow-right-from-bracket"></i>&nbsp;Logout
-            </button>
-          </ul>
-        </li>
+      <ul style="top: 20px">
+        <v-tabs v-model="tab" direction="vertical" color="error">
+          <router-link to="/quan-ly-nguoi-dung">
+            <v-tab value="option-1">
+              <i class="fa-solid fa-user"></i>&nbsp;Quản lý người dùng
+            </v-tab>
+          </router-link>
+          <router-link to="/quan-ly-danh-muc">
+            <v-tab value="option-2">
+              <i class="fa fa-solid fa-clipboard-list"></i>&nbsp;Quản lý danh
+              mục
+            </v-tab>
+          </router-link>
+          <router-link to="/quan-ly-san-pham">
+            <v-tab value="option-3">
+              <i class="fa fa-list-check"></i>&nbsp;Quản lý sản phẩm
+            </v-tab>
+          </router-link>
+          <router-link to="/quan-ly-don-hang">
+            <v-tab value="option-4">
+              <i class="fa-solid fa-cart-shopping"></i>&nbsp;Quản lý đơn hàng
+            </v-tab>
+          </router-link>
+          <div>
+            <v-tab value="option-5">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i>&nbsp;Đăng
+              xuất
+            </v-tab>
+          </div>
+        </v-tabs>
       </ul>
     </div>
   </div>
@@ -64,6 +48,7 @@ export default {
   data() {
     return {
       store: useUsersStore,
+      tab: "option-1",
     };
   },
   methods: {
@@ -88,8 +73,8 @@ export default {
   min-height: 47rem;
   color: #fff;
   position: fixed;
-  background: #6c6b7a;
-  padding: calc(var(--spacing) * 2);
+  background: #3daa12;
+  padding: 20px;
   .logo {
     padding: 20px;
     text-align: center;
@@ -101,17 +86,15 @@ export default {
       color: #fff;
     }
   }
-  li {
-    margin: 1rem;
-    padding: var(--spacing);
+  ul div {
     list-style: none;
-    color: #fff;
-    &:hover {
-      color: #000;
-      background: #e6dddd;
-      transition: 0.5s ease;
-      border-radius: 6px;
-    }
+    color: #000;
+    // &:hover {
+    //   color: #000;
+    //   background: #e6dddd;
+    //   transition: 0.5s ease;
+    //   border-radius: 6px;
+    // }
   }
   .setting {
     cursor: pointer;
@@ -142,5 +125,8 @@ export default {
       }
     }
   }
+}
+::v-deep .v-tab--selected .v-tab__slider {
+  opacity: 0;
 }
 </style>

@@ -28,9 +28,13 @@
                   placeholder="Nhập họ &amp; tên..."
                   required
                   v-model="fullname"
+                  @keyup="validateFullname"
                 />
               </div>
             </li>
+            <span class="err-phone-number" v-if="errorName"
+              >{{ errorName }}
+            </span>
             <li>
               <div class="input-group">
                 <div class="input-group-addon">
@@ -56,9 +60,11 @@
                   placeholder="Nhập số điện thoại..."
                   required
                   v-model="phone_number"
+                  @keyup="validatePhoneNumber"
                 />
               </div>
             </li>
+            <span class="err-phone-number" v-if="error">{{ error }} </span>
             <li>
               <div class="input-group">
                 <div class="input-group-addon">
@@ -121,6 +127,7 @@
 <script>
 import { mapState, mapActions } from "pinia";
 import { useUsersStore } from "../../stores/users";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -133,43 +140,96 @@ export default {
       store: useUsersStore(),
       errSignup1: "",
       errSignup2: "",
+      error: "",
+      errorName: "",
+      checkNumber: 0,
+      checkName: 0,
     };
   },
   methods: {
-    ...mapActions(useUsersStore, ["register"]),
+    ...mapActions(useUsersStore, ["register", "getProfile"]),
     async signup() {
       try {
         const data = {
-          // fullname: this.fullname,
-          // address: this.address,
-          // phone_number: this.phone_number,
+          fullname: this.fullname,
+          address: this.address,
+          phone_number: this.phone_number,
           email: this.email,
           password: this.password,
         };
-        const res = await this.store.register({ data });
-        if (res.status == 200) {
-          this.res = res;
-          this.$route.push({ path: "/home" });
+        this.checkNumber = this.validatePhoneNumber();
+        this.checkName = this.validateFullname();
+        // console.log(this.checkNumber, "154");
+        if (this.checkNumber == 1 && this.checkName == 1) {
+          const res = await this.register({ data });
+          if (res.status == 200) {
+            console.log(res);
+            Swal.fire({
+              position: "top-center",
+              icon: "success",
+              title: "Đăng ký tài khoản thành công",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            setTimeout(() => {
+              this.$router.push({ path: "/login" });
+            }, "2300");
+            await this.getProfile(this.params);
+            ///
+            Swal.fire({
+              position: "top-center",
+              icon: "success",
+              title: "Thêm thành công",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          }
+        } else {
+          console.log("err phone ");
         }
       } catch (error) {
-        console.log(error, "err_sigin");
-        // hot fix 
-        // if (
-        //   error.response.data.detail == "User with this email already exist"
-        // ) {
-        //   this.errSignup1 = "Email đã tồn tại, vui lòng nhập email khác!";
-        // } else {
-        //   this.errSignup1 = "";
-        // }
-        // if (
-        //   error.response.data.detail ==
-        //   "Mật khẩu phải có ít nhất 8 kí tự, bao gồm 1 chữ hoa, 1 chữ thường, 1 chữ số, 1 kí tự đặc biệt"
-        // ) {
-        //   this.errSignup2 =
-        //     "Mật khẩu phải có ít nhất 8 kí tự, bao gồm 1 chữ hoa, 1 chữ thường, 1 chữ số, 1 kí tự đặc biệt";
-        // } else {
-        //   this.errSignup2 = "";
-        // }
+        console.log(error, "errSiUp");
+        if (
+          error?.response.data.detail == "User with this email already exist"
+        ) {
+          this.errSignup1 = "Email đã tồn tại, vui lòng nhập email khác!";
+        } else {
+          this.errSignup1 = "";
+        }
+        if (
+          error?.response.data.detail ==
+          "Mật khẩu phải có ít nhất 8 kí tự, bao gồm 1 chữ hoa, 1 chữ thường, 1 chữ số, 1 kí tự đặc biệt"
+        ) {
+          this.errSignup2 =
+            "Mật khẩu phải có ít nhất 8 kí tự, bao gồm 1 chữ hoa, 1 chữ thường, 1 chữ số, 1 kí tự đặc biệt";
+        } else {
+          this.errSignup2 = "";
+        }
+      }
+    },
+
+    //check name
+    validateFullname() {
+      const validationRegex =
+        /^([a-vxyỳọáầảấờễàạằệếýộậốũứĩõúữịỗìềểẩớặòùồợãụủíỹắẫựỉỏừỷởóéửỵẳẹèẽổẵẻỡơôưăêâđ]+)((\s{1}[a-vxyỳọáầảấờễàạằệếýộậốũứĩõúữịỗìềểẩớặòùồợãụủíỹắẫựỉỏừỷởóéửỵẳẹèẽổẵẻỡơôưăêâđ]+){1,})$/g;
+      if (this.fullname.match(validationRegex)) {
+        this.errorName = "";
+        console.log("209 true");
+        return 1;
+      } else {
+        this.errorName = "Vui lòng nhập đầy đủ họ tên của bạn";
+        console.log("213 false");
+      }
+    },
+
+    // check number
+    validatePhoneNumber() {
+      const validationRegex = /(0[3|5|7|8|9])+([0-9]{8})\b/g;
+      if (this.phone_number.match(validationRegex)) {
+        this.error = "";
+        return 1;
+      } else {
+        this.error = "Vui lòng nhập số điện thoại hợp lệ";
       }
     },
   },
@@ -188,5 +248,11 @@ export default {
   h2 {
     padding-bottom: 5px;
   }
+}
+
+.err-phone-number {
+  font-size: 12px;
+  color: red;
+  padding-left: 18px;
 }
 </style>

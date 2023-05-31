@@ -85,6 +85,7 @@
 import accountColLeft from "../../components/TheAccountColumnLeft.vue";
 import { mapActions, mapState } from "pinia";
 import { useUsersStore } from "../../stores/users";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -105,14 +106,14 @@ export default {
         try {
           const data = this.dataUser;
           await this.store.updateProfile({ data });
-          alert("Đổi mật khẩu thành công!");
+          Swal.fire("Đổi mật khẩu thành công");
           this.errMes = "";
         } catch (error) {
           this.errMes =
             "Mật khẩu phải có ít nhất 8 kí tự, bao gồm 1 chữ hoa, 1 chữ thường, 1 chữ số, 1 kí tự đặc biệt";
         }
       } else {
-        alert("Xác nhận lại mật khẩu!");
+        Swal.fire("Thông tin không đúng", "Xác nhận lại mật khẩu của bạn", "question");
       }
     },
   },

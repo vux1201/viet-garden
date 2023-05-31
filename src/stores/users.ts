@@ -30,7 +30,7 @@ export const useUsersStore = defineStore("users", {
     allUsers: [],
     params: {} as ParamsGetUsers,
     detailUser: {},
-    totalUsers: 0,
+    totalUsers: Number,
   }),
   getters: {},
   actions: {
@@ -87,12 +87,13 @@ export const useUsersStore = defineStore("users", {
     async getUsers(params: ParamsGetUsers) {
       try {
         const res = await authApi.get(
-          `/users/?page=${params.page}&size=${params.size}`,
+          // ?page=${params.page}&size=${params.size}
+          `/users/`,
           { params }
         );
         if (res.status === 200) {
           this.allUsers = res.data.results;
-          this.totalUsers = res.data.total;
+          this.totalUsers = res.data;
         }
       } catch (error) {
         console.log(error);

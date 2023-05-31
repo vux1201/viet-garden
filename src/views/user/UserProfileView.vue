@@ -94,6 +94,7 @@
 import accountColLeft from "../../components/TheAccountColumnLeft.vue";
 import { mapActions, mapState } from "pinia";
 import { useUsersStore } from "../../stores/users";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -110,19 +111,31 @@ export default {
   },
 
   methods: {
-    ...mapActions(useUsersStore, ["updateProfile"]),
+    ...mapActions(useUsersStore, ["updateProfile", "getProfile"]),
     //cập nhật thông tin
     async updateProfile() {
       try {
         let data = this.auth.user;
         this.auth.user.fullname = this.userData.fullname;
         await this.store.updateProfile({ data });
-        alert("Cập nhật thành công!");
-        location.reload();
+        Swal.fire({
+          title: "Cập nhật thông tin thành công",
+          showClass: {
+            popup: "animate__animated animate__fadeInDown",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp",
+          },
+          timer: 2000,
+        });
       } catch (error) {
-        alert("không thể cập nhật!");
-        location.reload();
+        Swal.fire({
+          icon: "error",
+          title: "Không thể cập nhật",
+          text: "Kiểm tra lại thông tin của bạn",
+        });
       }
+      await this.getProfile();
     },
   },
   computed: {

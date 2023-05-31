@@ -22,7 +22,7 @@
                     </a>
                   </li> -->
                   <li
-                    v-for="(item, index) in allCategory.results?.[0].categories"
+                    v-for="(item, index) in allCategory.results?.[7].categories"
                     :key="index"
                   >
                     <a @click="categoryView(item.id)">{{ item.name }}</a>
@@ -55,7 +55,7 @@
                 </h3>
                 <ul>
                   <li
-                    v-for="(item, index) in allCategory.results?.[1].categories"
+                    v-for="(item, index) in allCategory.results?.[6].categories"
                     :key="index"
                   >
                     <a @click="categoryView(item.id)">{{ item.name }}</a>
@@ -272,6 +272,7 @@ export default {
       param: {
         page: 1,
         size: 10,
+        selected:false ,
       },
     };
   },
@@ -294,6 +295,7 @@ export default {
     //loc san pham
     async categoryView(category_id) {
       try {
+        this.selected = true;
         // this.params.page = 1;
         // this.params.size = 10;
         this.params.category_id = category_id;

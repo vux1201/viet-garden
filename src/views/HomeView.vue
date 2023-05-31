@@ -1,32 +1,4 @@
 <template>
-  <!-- banner  -->
-  <!-- <div class="bg-dark" style="left: -9rem">
-    <div class="container">
-      <div class="content">
-        <div class="banner-slider">
-          <div class="slider">
-            <div class="item">
-              <image src="" alt="">
-                <v-carousel
-                  cycle
-                  height="400"
-                  hide-delimiter-background
-                  show-arrows="hover"
-                >
-                  <v-carousel-item
-                    v-for="(slide, i) in slides"
-                    :key="i"
-                    :src="slide.src"
-                  >
-                  </v-carousel-item>
-                </v-carousel>
-              </image>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div class="bg-dark">
     <!-- banner  -->
 
@@ -91,6 +63,15 @@
           </ul>
         </div>
       </div>
+      <div class="text-center">
+        <v-pagination
+          v-model="page"
+          :length="totalPages"
+          rounded="circle"
+          @update:modelValue="updatePage(page, size)"
+        >
+        </v-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -100,9 +81,12 @@ import { mapState, mapActions } from "pinia";
 import { useProductsStore } from "../stores/products";
 import { useUsersStore } from "../stores/users";
 import { useCartStore } from "../stores/cart";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
+      page: 1,
+      size: 6,
       store: useProductsStore,
       valCategory: [],
       slides: [
@@ -119,8 +103,8 @@ export default {
   // Lấy giữu liệu từ API
   async created() {
     try {
-      this.params.page = 1;
-      this.params.size = 10;
+      this.params.page = this.page;
+      this.params.size = this.size;
       await this.getProducts(this.params);
       // await this.getDetailProduct(5);
       // await this.getCategories(this.params);
@@ -166,7 +150,13 @@ export default {
         if (!isLoggedIn && !userData) {
           this.$router.push({ path: "/login" });
         } else {
-          alert("Đã thêm vào giỏ hàng.");
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Đã thêm vào giỏ hàng",
+            showConfirmButton: false,
+            timer: 1000,
+          });
           await this.addCart(data);
         }
 
@@ -176,13 +166,30 @@ export default {
         console.log(error);
       }
     },
+
+    // phan trang
+    async updatePage(page, size) {
+      try {
+        this.params.page = page;
+        this.params.size = size;
+        await this.getProducts(this.params);
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
   computed: {
     ...mapState(useProductsStore, [
       "params",
       "allProducts",
+      "totalProduct",
       "getDetailProduct",
     ]),
+    totalPages() {
+      let number = this.totalProduct.total / this.size;
+      // console.log(number, "number");
+      return Math.ceil(number);
+    },
   },
 };
 </script>
@@ -204,6 +211,7 @@ export default {
 .content-page {
   margin: 0;
   width: 102.5%;
+  z-index: 2;
 }
 .product-block {
   width: 100%;
@@ -304,5 +312,9 @@ export default {
       }
     }
   }
+}
+::v-deep .v-pagination__list {
+  background: #fff;
+  width: 102.5%;
 }
 </style>

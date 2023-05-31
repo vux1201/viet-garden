@@ -51,7 +51,7 @@
                 </thead>
                 <tbody>
                   <tr
-                    style="text-align: center"
+                    style="text-align: center; top: 10px;"
                     v-for="(item, index) in allCart"
                     :key="index"
                   >
@@ -99,12 +99,12 @@
               </table>
             </div>
           </div>
-          <div class="total-price">
+          <!-- <div class="total-price">
             Tổng cộng:<strong style="color: red">
-              <!-- <input v-model="this.sumTotal" /> -->
+              <input v-model="this.sumTotal" />
               <span>{{ totalOder(this.sumTotal) }}</span>
             </strong>
-          </div>
+          </div> -->
           <div class="button-signin">
             &nbsp;&nbsp;
             <router-link to="/PaymentAddress">
@@ -124,6 +124,7 @@
 <script>
 import { mapActions, mapState } from "pinia";
 import { useCartStore } from "../../stores/cart";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -164,7 +165,7 @@ export default {
       };
       await this.updateCart(item.id, data);
       await this.getCarts();
-      location.reload();
+      // location.reload();
     },
 
     async onClickMinus(item) {
@@ -175,19 +176,34 @@ export default {
       };
       await this.updateCart(item.id, data);
       await this.getCarts();
-      location.reload();
+      // location.reload();
     },
 
     // xoa
     async clickdeleteCart(item) {
       try {
-        if (confirm("Xóa khỏi giỏ hàng") == true) {
-          await this.deleteCart(item.id);
-          console.log(item.id, "delete");
-          await this.getCarts();
-        } else {
-          return 0;
-        }
+        Swal.fire({
+          title: "Xóa sản phẩm khỏi rỏ hàng?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Tiếp tục",
+          cancelButtonText: "Hủy",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.deleteCart(item.id);
+            this.getCarts();
+            Swal.fire("Đã xóa khỏi giỏ hàng!");
+          }
+        });
+        // if (confirm("Xóa khỏi giỏ hàng") == true) {
+        //   await this.deleteCart(item.id);
+        //   console.log(item.id, "delete");
+        //   await this.getCarts();
+        // } else {
+        //   return 0;
+        // }
       } catch (error) {
         console.log(error);
       }

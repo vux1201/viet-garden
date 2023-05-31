@@ -9,6 +9,9 @@
       <button class="btn-adduser" href="#edit" @click="addProducts">
         <i class="fa-light fa-circle-plus"></i>&nbsp;Thêm sản phẩm
       </button>
+      <div style="left: 20px; color: rgb(9, 90, 106)">
+        Tổng sản phẩm: {{ totalProduct.total }}
+      </div>
       <table class="container">
         <thead>
           <th>Id sản phẩm</th>
@@ -62,7 +65,7 @@
     </div>
     <!-- thêm sản phẩm -->
     <div class="show-addProducts" v-if="show == true">
-      <form>
+      <div>
         <h2 class="title1">Thông tin sản phẩm</h2>
         <!--  -->
         <div class="form-input">
@@ -93,6 +96,7 @@
           <div class="form-categories" v-if="!this.id_product">
             <select
               class="categories"
+              required
               v-model="modal"
               @change="idCategory(modal.id)"
             >
@@ -114,19 +118,19 @@
         <!--  -->
         <div class="form-input">
           <label>Hình ảnh <a title="trường bắt buộc">(*)</a></label>
-          <div class="list-img">
+          <div class="list-img" >
             <div class="img" v-for="(image, index) in images" :key="index">
-              <img
-                :src="
-                  image ||
-                  'https://www.namepros.com/attachments/empty-png.89209/'
-                "
-              />
+              <img :src="image || newProduct.product_images[0].image_path" />
               <button class="btn-del-img" @click="remoteImage(index)">
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
           </div>
+          <!-- <div class="list-img" v-else>
+            <div class="img">
+              <img :src="newProduct.product_images[0].image_path" />
+            </div>
+          </div> -->
           <input
             style="border: none; top: -1px"
             accept="image/*"
@@ -142,7 +146,7 @@
           <textarea
             type="text"
             v-model="this.newProduct.summary"
-            required
+            required="required"
           ></textarea>
         </div>
         <!--  -->
@@ -151,7 +155,7 @@
           <textarea
             type="text"
             v-model="this.newProduct.detail"
-            required
+            required="required"
           ></textarea>
         </div>
         <!--  -->
@@ -173,19 +177,14 @@
           >
             Lưu
           </button>
-          <button
-            class="btn-adduser"
-            type="submit"
-            @click="updateNewProduct"
-            v-else
-          >
+          <button class="btn-adduser" @click="updateNewProduct" v-else>
             Cập nhật
           </button>
-          <button class="btn-adduser" type="reset" @click="addProducts">
+          <button class="btn-adduser" type="submit" @click="clickCancel">
             Hủy
           </button>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
@@ -194,6 +193,7 @@
 import userSearch from "./UserSearch.vue";
 import { mapState, mapActions } from "pinia";
 import { useProductsStore } from "../../stores/products";
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -202,7 +202,7 @@ export default {
       show: false,
       uploadImg: null,
       newImage: "",
-      images: [], // khi ảnh hiển thị thì ảnh có trong này rồi
+      images: [],
       store: useProductsStore,
       valCategory: [],
       newProduct: {
@@ -212,9 +212,11 @@ export default {
         inventory: "",
         summary: "",
         detail: "",
+        product_images: [],
       },
       id_product: "",
       name_category: "",
+      product: "",
     };
   },
   //hien thi thong tin
@@ -234,6 +236,7 @@ export default {
   methods: {
     ...mapActions(useProductsStore, [
       "getProducts",
+      "getProduct",
       "getCategories",
       "uploadImage",
       "postProducts",
@@ -287,8 +290,18 @@ export default {
         await this.uploadImage(this.uploadImg, { ...this.newProduct }, cb);
         console.log(images, "this.newProduct.image_path");
         await this.postProducts(images);
-        // alert("Thêm thành công!");
-        console.log(1);
+        setTimeout(() => {
+          this.show = !this.show;
+        }, "2500");
+        await this.getProducts(this.params);
+        Swal.fire({
+          position: "top-center",
+          icon: "success",
+          title: "Thêm thành công",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        // console.log(1);
       } catch (error) {
         console.log(error);
       }
@@ -304,13 +317,16 @@ export default {
       this.newProduct.inventory = product.inventory;
       this.newProduct.summary = product.summary;
       this.newProduct.detail = product.detail;
-      console.log(product, "id_upPro");
-      console.log(this.name_category, "new");
+      this.newProduct.product_images = product.product_images;
+      console.log(this.newProduct, "id_upPro");
+      // this.product = product;
+      // console.log(this.name_category, "new");
     },
 
     //sua thong tin sp
     async updateNewProduct() {
       try {
+        console.log("object", this.newProduct);
         let images;
         const cb = (data, image_path) => {
           images = { ...data, product_images: [{ image_path }] };
@@ -319,9 +335,19 @@ export default {
         await this.uploadImage(this.uploadImg, { ...this.newProduct }, cb);
         console.log(images, "this.newProduct.image_path");
         await this.putProducts(this.id_product, images);
-        // await this.getProduct(this.params);
-        // alert("Thêm thành công!");
-        console.log(1.1);
+        console.log(images, "anhr");
+        setTimeout(() => {
+          this.show = !this.show;
+        }, "2500");
+        ////
+        Swal.fire({
+          position: "top-center",
+          icon: "success",
+          title: "Đã cập nhật",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        await this.getProducts(this.params);
       } catch (error) {
         console.log(error);
       }
@@ -330,18 +356,64 @@ export default {
     // xóa phần tử
     async handleDelete(id) {
       try {
-        if (confirm("Bạn có chắc muốn xóa") == true) {
-          await this.deleteProduct(id);
-          this.params.page = this.page;
-          this.params.size = this.size;
-          await this.getProduct(this.params);
-        } else {
-          return 0;
-        }
+        // if (confirm("Bạn có chắc muốn xóa") == true) {
+        //   await this.deleteProduct(id);
+        //   this.params.page = this.page;
+        //   this.params.size = this.size;
+        //   await this.getProduct(this.params);
+        // } else {
+        //   return 0;
+        // }
+        Swal.fire({
+          title: "Bạn có chắc muốn xóa!",
+          text: "Bạn sẽ không thể khôi phục dữ liệu này!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Xóa",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.deleteProduct(id);
+            this.params.page = this.page;
+            this.params.size = this.size;
+            await this.getProducts(this.params);
+            Swal.fire("Đã xóa!", "Sản phẩm đã được xóa.", "success");
+          }
+        });
       } catch (error) {
-        console.log("không thể xóa");
+        console.log(error);
       }
       // console.log("id-dele", id);
+    },
+
+    // huy
+    clickCancel() {
+      let timerInterval;
+      Swal.fire({
+        title: "Đang quay lại!",
+        timer: 200,
+        timerProgressBar: true,
+        didOpen: () => {
+          Swal.showLoading();
+          const b = Swal.getHtmlContainer().querySelector("b");
+          timerInterval = setInterval(() => {
+            b.textContent = Swal.getTimerLeft();
+          }, 100);
+        },
+        willClose: () => {
+          clearInterval(timerInterval);
+        },
+      }).then((result) => {
+        /* Read more about handling dismissals below */
+        if (result.dismiss === Swal.DismissReason.timer) {
+          console.log("I was closed by the timer");
+        }
+      });
+      location.reload();
+      // this.show = !this.show;
+      // this.id_product = !this.id_product;
+      // this.getProducts(this.params);
     },
 
     // phan trang
@@ -396,5 +468,15 @@ export default {
 }
 .form-categories p {
   padding: 5px 6px;
+}
+
+.form-input {
+  input:invalid {
+    border: 2px solid red;
+  }
+
+  input:valid {
+    border: 2px solid black;
+  }
 }
 </style>
